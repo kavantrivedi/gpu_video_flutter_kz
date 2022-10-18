@@ -47,6 +47,11 @@ class Mp4ComposeManager(
         })
     }
 
+    fun getpath(onResult: (String) -> Unit) {
+        Log.d("path","--------------")
+        Log.d("path",videoPath.toString())
+        onResult(videoPath.toString());
+    }
     fun startCodec(
         isMute: Boolean,
         isFlipHorizontal: Boolean,

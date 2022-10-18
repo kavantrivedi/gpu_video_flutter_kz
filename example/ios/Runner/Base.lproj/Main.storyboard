@@ -23,4 +23,11 @@
             </objects>
         </scene>
     </scenes>
+<resources>
+    <image name="record" width="114" height="114"/>
+    <image name="rotate_camera" width="45" height="40"/>
+    <image name="torch" width="40" height="40"/>
+    <image name="zoom-bg" width="22" height="451"/>
+    <image name="zoom-point" width="33" height="33"/>
+</resources>
 </document>

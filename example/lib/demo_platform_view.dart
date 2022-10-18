@@ -3,12 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gpu_video_flutter_kz/camera_view_type.dart';
+import 'package:gpu_video_flutter_kz/filter_type.dart';
+import 'package:gpu_video_flutter_kz/gpu_camera_record.dart';
+import 'package:gpu_video_flutter_kz/gpu_movie_preview.dart';
+import 'package:gpu_video_flutter_kz/gpu_video_flutter_kz.dart';
 import 'package:gpu_video_flutter_kz/video_item.dart';
 import 'package:gpu_video_flutter_kz_example/main.dart';
-import 'package:gpu_video_flutter_kz/gpu_movie_preview.dart';
-import 'package:gpu_video_flutter_kz/gpu_camera_record.dart';
-import 'package:gpu_video_flutter_kz/filter_type.dart';
-import 'package:gpu_video_flutter_kz/gpu_video_flutter_kz.dart';
 
 import 'camera_preview_view.dart';
 
@@ -26,9 +26,11 @@ class _DemoPlatformViewState extends State<DemoPlatformView> {
   bool isFlipHorizontal = false;
   bool isFlipVertical = false;
   List<VideoItem> videos = [];
+  String? path;
   FilterType filterType = FilterType.DEFAULT;
   String videoSelectedPath = "";
   bool isButtonStartRecordEnable = false;
+  int getSelectedFilter = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +71,21 @@ class _DemoPlatformViewState extends State<DemoPlatformView> {
                   TextButton(
                     onPressed: () {
                       if (isButtonStartRecordEnable) {
-                        GpuVideoFlutterKz.startCodec(isMute, isFlipHorizontal,
-                            isFlipVertical, videoSelectedPath, filterType);
+                        GpuVideoFlutterKz.startCodec(
+                            isMute,
+                            isFlipHorizontal,
+                            isFlipVertical,
+                            videoSelectedPath,
+                            FilterType.values[getSelectedFilter]);
                       }
                     },
                     child: const Text("STARTCODEC !!"),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _getVideoPath();
+                      print(path);
+                    },
                     child: const Text("PLAY MOVIE !!"),
                   ),
                 ],
@@ -87,8 +96,19 @@ class _DemoPlatformViewState extends State<DemoPlatformView> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    TextButton(
-                        onPressed: () {},
+                    PopupMenuButton(
+                        onSelected: (FilterType filtertype) {
+                          getSelectedFilter = filtertype.index;
+                          print(getSelectedFilter);
+                        },
+                        itemBuilder: (BuildContext context) {
+                          return List.generate(
+                            FilterType.values.length,
+                            (index) => PopupMenuItem(
+                                child: Text(FilterType.values[index].name),
+                                value: FilterType.values[index]),
+                          );
+                        },
                         child: const Text("FILTER: FILTER GROUP")),
                     Checkbox(
                       value: isMute,
@@ -155,58 +175,57 @@ class _DemoPlatformViewState extends State<DemoPlatformView> {
   Scaffold _buildCameraRecord() {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CameraPreviewView(
+                    cameraView: GPUCameraRecord(
+                        cameraViewType: CameraViewType.portrait),
+                  ),
+                ),
+              );
+            },
+            child: const Text("Portrait"),
+          ),
+          TextButton(
+              onPressed: () {
+                setState(() {
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.landscapeLeft,
+                    DeviceOrientation.landscapeRight
+                  ]);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CameraPreviewView(
+                        cameraView: GPUCameraRecord(
+                            cameraViewType: CameraViewType.landscape),
+                      ),
+                    ),
+                  );
+                });
+              },
+              child: const Text("Landscape")),
+          TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const CameraPreviewView(
                       cameraView: GPUCameraRecord(
-                          cameraViewType: CameraViewType.portrait),
+                          cameraViewType: CameraViewType.square),
                     ),
                   ),
                 );
               },
-              child: const Text("Portrait"),
-            ),
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    SystemChrome.setPreferredOrientations([
-                      DeviceOrientation.landscapeLeft,
-                      DeviceOrientation.landscapeRight
-                    ]);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CameraPreviewView(
-                          cameraView: GPUCameraRecord(
-                              cameraViewType: CameraViewType.landscape),
-                        ),
-                      ),
-                    );
-                  });
-                },
-                child: const Text("Landscape")),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CameraPreviewView(
-                        cameraView: GPUCameraRecord(
-                            cameraViewType: CameraViewType.square),
-                      ),
-                    ),
-                  );
-                },
-                child: const Text("Square")),
-          ],
-        ),
-      ),
+              child: const Text("Square")),
+        ],
+      )),
     );
   }
 
@@ -251,6 +270,13 @@ class _DemoPlatformViewState extends State<DemoPlatformView> {
     List<VideoItem> list = await GpuVideoFlutterKz.getListVideo();
     setState(() {
       videos = list;
+    });
+  }
+
+  void _getVideoPath() async {
+    String videoPath = await GpuVideoFlutterKz.getVideoPath();
+    setState(() {
+      path = videoPath;
     });
   }
 

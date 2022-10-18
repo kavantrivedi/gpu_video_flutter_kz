@@ -33,6 +33,20 @@ class GpuVideoFlutterKz {
     return result;
   }
 
+  static Future<String> filterCameraRecorderIOS(
+      IOSFilterType filterType) async {
+    int position = IOSFilterType.values.indexOf(filterType);
+    final String result = await _channel
+        .invokeMethod("filterCameraRecorder", {"position": position});
+    return result;
+  }
+
+  static Future<String> getVideoPath() async {
+    String result = await _channel.invokeMethod('getVideoPath');
+    print(result);
+    return result;
+  }
+
   static Future<String> recordCameraVideo() async {
     final String result = await _channel.invokeMethod("recordCameraVideo");
     return result;

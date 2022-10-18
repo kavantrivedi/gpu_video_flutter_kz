@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
 import 'package:gpu_video_flutter_kz/camera_view_type.dart';
 
 class GPUCameraRecord extends StatelessWidget {
@@ -46,30 +46,38 @@ class GPUCameraRecord extends StatelessWidget {
       "cameraHeight": cameraHeight
     };
 
-    return PlatformViewLink(
-      viewType: viewType,
-      surfaceFactory:
-          (BuildContext context, PlatformViewController controller) {
-        return AndroidViewSurface(
-          controller: controller as AndroidViewController,
-          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (PlatformViewCreationParams params) {
-        return PlatformViewsService.initSurfaceAndroidView(
-          id: params.id,
-          viewType: viewType,
-          layoutDirection: TextDirection.ltr,
-          creationParams: creationParams,
-          creationParamsCodec: const StandardMessageCodec(),
-          onFocus: () {
-            params.onFocusChanged(true);
-          },
-        )
-          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-          ..create();
-      },
-    );
+    return Theme.of(context).platform != TargetPlatform.iOS
+        ? PlatformViewLink(
+            viewType: viewType,
+            surfaceFactory:
+                (BuildContext context, PlatformViewController controller) {
+              return AndroidViewSurface(
+                controller: controller as AndroidViewController,
+                gestureRecognizers: const <
+                    Factory<OneSequenceGestureRecognizer>>{},
+                hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+              );
+            },
+            onCreatePlatformView: (PlatformViewCreationParams params) {
+              return PlatformViewsService.initSurfaceAndroidView(
+                id: params.id,
+                viewType: viewType,
+                layoutDirection: TextDirection.ltr,
+                creationParams: creationParams,
+                creationParamsCodec: const StandardMessageCodec(),
+                onFocus: () {
+                  params.onFocusChanged(true);
+                },
+              )
+                ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+                ..create();
+            },
+          )
+        : UiKitView(
+            viewType: 'gpu/movie_preview',
+            layoutDirection: TextDirection.ltr,
+            creationParams: creationParams,
+            creationParamsCodec: const StandardMessageCodec(),
+          );
   }
 }

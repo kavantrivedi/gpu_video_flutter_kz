@@ -104,10 +104,11 @@ public class VideoLoader {
                     if (file.exists()) {
                         temp.add(new VideoItem(
                                 path,
-                                Integer.valueOf(duration),
-                                Integer.valueOf(width),
-                                Integer.valueOf(height)
+                                Integer.parseInt(duration),
+                                Integer.parseInt(width),
+                                Integer.parseInt(height)
                         ));
+
                     }
                     file = null;
 

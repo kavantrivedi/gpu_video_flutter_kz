@@ -24,19 +24,34 @@ class _CameraPreviewViewState extends State<CameraPreviewView> {
                 child: Align(
                     alignment: Alignment.center, child: widget.cameraView)),
             Positioned(
-              child: ListView.separated(
-                itemCount: FilterType.values.length,
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
-                itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                    onTap: () => _onItemClick(FilterType.values[index]),
-                    child: ListTile(
-                      title: Text(FilterType.values[index].name),
+              child: Theme.of(context).platform != TargetPlatform.iOS
+                  ? ListView.separated(
+                      itemCount: FilterType.values.length,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return InkWell(
+                          onTap: () => _onItemClick(FilterType.values[index]),
+                          child: ListTile(
+                            title: Text(FilterType.values[index].name),
+                          ),
+                        );
+                      },
+                    )
+                  : ListView.separated(
+                      itemCount: IOSFilterType.values.length,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(),
+                      itemBuilder: (BuildContext context, int index) {
+                        return InkWell(
+                          onTap: () =>
+                              _onIOSItemClick(IOSFilterType.values[index]),
+                          child: ListTile(
+                            title: Text(IOSFilterType.values[index].name),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             Positioned(
               left: 0,
@@ -81,6 +96,8 @@ class _CameraPreviewViewState extends State<CameraPreviewView> {
   void _onItemClick(FilterType filterType) {
     GpuVideoFlutterKz.filterCameraRecorder(filterType);
   }
+
+  void _onIOSItemClick(IOSFilterType filterType) {}
 
   void _onButtonRecordClick() {
     setState(() {

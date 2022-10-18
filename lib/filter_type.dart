@@ -42,3 +42,19 @@ enum FilterType {
   ZOOM_BLUR,
   BITMAP_OVERLAY_SAMPLE
 }
+
+enum IOSFilterType {
+  invertColorEffect,
+  vignetteEffect,
+  photoInstantEffect,
+  crystallizeEffect,
+  comicEffect,
+  bloomEffect,
+  edgesEffect,
+  edgeWorkEffect,
+  gloomEffect,
+  hexagonalPixellateEffect,
+  highlightShadowAdjust,
+  pixellateEffect,
+  pointillizeEffect,
+}

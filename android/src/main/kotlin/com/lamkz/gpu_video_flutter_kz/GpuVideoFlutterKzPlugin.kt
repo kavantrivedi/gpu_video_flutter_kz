@@ -103,7 +103,7 @@ class GpuVideoFlutterKzPlugin : FlutterPlugin, MethodCallHandler,
                 "getPlatformVersion" -> {
                     result.success("Android ${android.os.Build.VERSION.RELEASE}")
                 }
-                "filterVideo" -> {
+                    "filterVideo" -> {
                     val positionFilter: Int = call.argument<Int>("position")!!
                     Log.d("GPUVideoKzPlugin39", "$positionFilter")
                     moviePreviewFactory.setPosition(positionFilter)
@@ -161,6 +161,15 @@ class GpuVideoFlutterKzPlugin : FlutterPlugin, MethodCallHandler,
                     )
                     result.success("OK")
                 }
+                "getVideoPath"->{
+                    mp4ComposeManager.getpath {
+                        result.success(it)
+                    }.toString()
+                    Log.d("data","============")
+                    Log.d("data", mp4ComposeManager.getpath {
+                        result.success(it)
+                    }.toString());
+                }
                 else -> {
                     result.notImplemented()
                 }
@@ -177,8 +186,8 @@ class GpuVideoFlutterKzPlugin : FlutterPlugin, MethodCallHandler,
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String>?,
-        grantResults: IntArray?
+        permissions: Array<out String>,
+        grantResults: IntArray
     ): Boolean {
         when (requestCode) {
             CAMERA_REQUEST_PERMISSION_CODE -> {
